@@ -1,0 +1,5 @@
+ori
+spat_freq
+temp_freq
+cont
+loc
