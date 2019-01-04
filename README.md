@@ -1,4 +1,4 @@
-# visual_stim_code
+# visual_stim_code_feature_tuning
 Code used to generate visual stimuli to determine the tuning properties of neurons.
 
 Written in python using psychopy package in collaboration with Omar and Baohua.
