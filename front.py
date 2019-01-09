@@ -5,6 +5,7 @@ def front():
     import VS
     import drumgrating
     import movSinGrat_tuning
+    import EYE_calibration3
     import socket
     from init_para import *
     import TestNov
@@ -247,6 +248,18 @@ def front():
         grid_horz_justification='center',
         grid_vert_justification='center')
         
+        #creating a  textbox for calibration code
+    Calibration_Obj = visual.TextBox(
+        window=win,
+        text=("Calibration"),
+        font_size = fontSize,
+        font_color=fontClr,
+        border_color=boarderClr,
+        pos=(origin_x + 0.5*front_textbox_size[0], origin_y - button_init_y - 2*(front_textbox_size[1]+button_spacing)),
+        size= front_textbox_size,
+        units='norm',
+        grid_horz_justification='center',
+        grid_vert_justification='center')
     
     #This is where we create the necessary buttons
     
@@ -448,6 +461,16 @@ def front():
         vertices = front_button_size
         )
         
+    #calibration start button
+    calibration_button = visual.ShapeStim(
+        win = win, 
+        units = "norm", 
+        fillColor = [0,0,0],
+        ori = 0, 
+        pos = Calibration_Obj.getPosition(), 
+        opacity = 0, 
+        vertices = front_button_size
+        )
 
     
     #drawing the textboxes
@@ -469,6 +492,7 @@ def front():
     mtnmode_ObjORI.draw()
     ledstate_Obj.draw()
     MovSinGrat_Tuning_Obj.draw()
+    Calibration_Obj.draw()
     
     
     #drawing the buttons
@@ -490,6 +514,7 @@ def front():
     mtnModeButORI.draw()
     ledstateBut.draw()
     MovSinGrat_TuningBut.draw()
+    calibration_button.draw()
     
     #drawing squares
     square1.draw()
@@ -673,6 +698,10 @@ def front():
             square2.draw()
             win.flip()
         
+        elif mouse.isPressedIn(calibration_button) and currMouse[0] == 1:
+            EYE_calibration3.calibration(win)
+            win.flip()
+        
         elif keys:
             if keys[0] == 'escape':
                     break
@@ -697,6 +726,7 @@ def front():
             mtnmode_ObjORI.draw()
             ledstate_Obj.draw()
             MovSinGrat_Tuning_Obj.draw()
+            Calibration_Obj.draw()
             square1.draw()
             square2.draw()
             win.flip()
