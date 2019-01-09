@@ -8,7 +8,7 @@ This visual stim will be used to calibrate the eye tracking system.
 NOTE: the relationship beteen pupil size and luminance is logarithmic; 
 therefore the steps by which the liminance is increase follow a log scale; 
 
-SOMETHING WRONG WITH log_val
+SOMETHING WRONG WITH log_val >> need to change all log_val to lum_val
 
 
 '''
@@ -21,12 +21,16 @@ winWidth , winHeight, ScrnNum, PixelSize, winWidthofEachDisp, DisplayFrameWidth,
 
 #define parameters
 
-log_max = MovSinGrat_AmpFactor*250*MovSinGrat_GammaFactor #cd/m^2
-log_min = MovSinGrat_AmpFactor*1**MovSinGrat_GammaFactor #cd/m^2
-log_val = (np.exp(np.log(log_min/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor))
-log_step = (np.log(log_max) - np.log(log_min))/6
+maximum = MovSinGrat_AmpFactor*250*MovSinGrat_GammaFactor #cd/m^2 
+minimum = MovSinGrat_AmpFactor*1**MovSinGrat_GammaFactor #cd/m^2 
+log_max = np.log(maximum)
+log_min = np.log(minimum)
+
+log_step = (log_max - log_min)/6
 Contrast = 1
-inc = np.exp(log_val)* Contrast #increase the step by this variable 
+
+lum_val = np.exp(log_min)
+inc = lum_val* Contrast #increase the step by this variable 
 step_count = 0 #counter to loop around lum values
 
 SpatFreqDeg = 0.1
@@ -49,7 +53,7 @@ for i in range(ScrnNum):
 texdata1D = []
 
 #generating the pixel values for vertical stimulus 
-texdata1DTmp = np.exp(np.log((log_val + inc*np.sin(pixelangle*SpatFreqDeg*2*np.pi + phase))/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
+texdata1DTmp = np.exp(np.log((lum_val + inc*np.sin(pixelangle*SpatFreqDeg*2*np.pi + phase))/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
 pixVal = 2*(texdata1DTmp/255) - 1 #converting the pixel values from 0:255 to -1:1
 
 #setting up the grating
@@ -63,7 +67,7 @@ DrawTexture = visual.GratingStim(
 #display current lumninance value
 lum_text = visual.TextBox(
     window=win,
-    text=(str(log_val)),
+    text=(str(lum_val)),
     font_size = fontSize,
     font_color=fontClr,
     pos=(-2690 ,475),
@@ -102,17 +106,17 @@ while True:
         step_count += 1
         
         if step_count % 6 != 0:
-            log_val = log_min + log_step*(step_count%6) 
+            lum_val = log_min + log_step*(step_count%6) 
             
         else: 
-            log_val = log_min
+            lum_val = log_min
             
         #increase by increment value LOG
-        inc = np.exp(log_val)*Contrast
-        log_val = (np.exp(np.log(log_val/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor))
+        lum_val = np.exp(lum_val)
+        inc = lum_val*Contrast
         
         #regenerating the pixel values 
-        texdata1DTmp = np.exp(np.log((log_val + inc*np.sin(pixelangle*SpatFreqDeg*2*np.pi + phase))/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
+        texdata1DTmp = np.exp(np.log((lum_val + inc*np.sin(pixelangle*SpatFreqDeg*2*np.pi + phase))/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
         pixVal = 2*(texdata1DTmp/255) - 1 #converting the pixel values from 0:255 to -1:1
         
         #redraw texture and new lum val
@@ -127,7 +131,7 @@ while True:
         #display current lumninance value
         lum_text = visual.TextBox(
             window=win,
-            text=(str(log_val)),
+            text=(str(lum_val)),
             font_size = fontSize,
             font_color=fontClr,
             pos=(-2690 ,475),
@@ -152,17 +156,17 @@ while True:
         step_count -= 1
         
         if step_count % 6 != 0:
-            log_val = log_min + log_step*(step_count%6)
+            lum_val = log_min + log_step*(step_count%6)
             
         else: 
-            log_val = log_min
+            lum_val = log_min
         
         #increase by increment value
-        inc = np.exp(log_val)*Contrast
-        log_val = (np.exp(np.log(log_val/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor))
+        lum_val = np.exp(lum_val)
+        inc = lum_val*Contrast
         
         #regenerating the pixel values from luminance val 
-        texdata1DTmp = np.exp(np.log((log_val + inc*np.sin(pixelangle*SpatFreqDeg*2*np.pi + phase))/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
+        texdata1DTmp = np.exp(np.log((lum_val + inc*np.sin(pixelangle*SpatFreqDeg*2*np.pi + phase))/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
         pixVal = 2*(texdata1DTmp/255) - 1 #converting the pixel values from 0:255 to -1:1
         
         
@@ -178,7 +182,7 @@ while True:
         #display current lumninance value
         lum_text = visual.TextBox(
             window=win,
-            text=(str(log_val)),
+            text=(str(lum_val)),
             font_size = fontSize,
             font_color=fontClr,
             pos=(-2690 ,475),
