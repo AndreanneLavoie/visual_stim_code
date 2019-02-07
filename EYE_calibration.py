@@ -1,20 +1,13 @@
 def calibration(win):
-
-
     '''
-
-
-
+    input: win (define a window)
+    output: vis stim with varying lum val changing based on log scale
+    
     This function will generate static grating will changing luminance (using log scale). 
     This visual stim will be used to calibrate the eye tracking system.
-
-
+    
     NOTE: the relationship beteen pupil size and luminance is logarithmic; 
     therefore the steps by which the liminance is increase follow a log scale; 
-
-
-    SOMETHING WRONG WITH log_val >> need to change all log_val to lum_val
-
 
     '''
 
@@ -25,7 +18,7 @@ def calibration(win):
     from init_para import (MovSinGrat_Amp_sinu, MovSinGrat_GammaFactor, MovSinGrat_AmpFactor, MovSinGrat_contrast, MovSinGrat_MeanLum, win,
     winWidth , winHeight, ScrnNum, PixelSize, winWidthofEachDisp, DisplayFrameWidth, FR, square1, square2, fontSize, fontClr, win, Local_IP, Local_Port, Remote_IP, Remote_Port)
 
-#define parameters
+    #define parameters
     WholeWinwidth = winWidth
     WinWidthofEachdisp = winWidth/ScrnNum
     
