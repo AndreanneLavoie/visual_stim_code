@@ -25,33 +25,38 @@ def calibration(win):
     from init_para import (MovSinGrat_Amp_sinu, MovSinGrat_GammaFactor, MovSinGrat_AmpFactor, MovSinGrat_contrast, MovSinGrat_MeanLum, win,
     winWidth , winHeight, ScrnNum, PixelSize, winWidthofEachDisp, DisplayFrameWidth, FR, square1, square2, fontSize, fontClr, win, Local_IP, Local_Port, Remote_IP, Remote_Port)
 
-    #define parameters
+#define parameters
+    WholeWinwidth = winWidth
+    WinWidthofEachdisp = winWidth/ScrnNum
+    
+    #set the type of pattern for the calibration:
+    calib_pattern = 0
 
-    maximum = (MovSinGrat_AmpFactor*250**MovSinGrat_GammaFactor)/2 #the max elgible val for MeanLum in cd/m^2 
+    if calib_pattern: #1 = gratting, 0 = uniform
+        maximum = (MovSinGrat_AmpFactor*250**MovSinGrat_GammaFactor)/2 #the max elgible val for MeanLum in cd/m^2 
+    else:
+        maximum = (MovSinGrat_AmpFactor*250**MovSinGrat_GammaFactor) #the max elgible val for MeanLum in cd/m^2
+        
     #minimum = (MovSinGrat_AmpFactor*1**MovSinGrat_GammaFactor)/2 #the min elgible val for MeanLum incd/m^2 
     minimum = 15
     log_max = np.log(maximum)
     log_min = np.log(minimum)
 
-    num_step = 5
+    num_step = 5 #but total steps plus 2 0
     log_step = (log_max - log_min)/num_step
     Contrast = 1
 
     temp = np.array(range(0, (num_step+1)))
     log_lum_val = log_min + log_step*(temp)
-
-
     lum_val_list = np.exp(log_lum_val)
     lum_val_list = np.append([0], lum_val_list)
-
     lum_val = lum_val_list[0]
-    inc = lum_val* Contrast #increase the step by this variable 
     step_count = 0 #counter to loop around lum values
 
+    
+    inc = lum_val* Contrast #increase the step by this variable
     SpatFreqDeg = 0.1
     #MeanLum = (maximum)/2
-    WholeWinwidth = winWidth
-    WinWidthofEachdisp = winWidth/ScrnNum
     phase = 0 #in radius 
 
     #generating matrix that will be the place holder for every pixel 
@@ -63,12 +68,13 @@ def calibration(win):
     for i in range(ScrnNum):
         pixelangle[:,i*winWidthofEachDisp: (i + 1)*winWidthofEachDisp ] = tempPixelAngle + 90*i #taking specific ranges within the full winWidth and replacing the values with the corresponding angles
 
-    #creating the list that will hold all frames
-    texdata1D = []
-
     #generating the pixel values for vertical stimulus 
     texdata1DTmp = np.exp(np.log((lum_val + inc*np.sin(pixelangle*SpatFreqDeg*2*np.pi + phase))/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
     pixVal = 2*(texdata1DTmp/255) - 1 #converting the pixel values from 0:255 to -1:1
+
+    if not calib_pattern: #for uniform mask, set pixval to single lum_val
+        uniform_pix = np.exp(np.log(lum_val/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
+        pixVal[:] = 2*(uniform_pix/255) - 1
 
     #setting up the grating
     DrawTexture = visual.GratingStim(
@@ -128,6 +134,10 @@ def calibration(win):
             texdata1DTmp = np.exp(np.log((lum_val + inc*np.sin(pixelangle*SpatFreqDeg*2*np.pi + phase))/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
             pixVal = 2*(texdata1DTmp/255) - 1 #converting the pixel values from 0:255 to -1:1
             
+            if not calib_pattern: #for uniform mask, set pixval to single lum_val
+                uniform_pix = np.exp(np.log(lum_val/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
+                pixVal[:] = 2*(uniform_pix/255) - 1
+            
             #redraw texture and new lum val
             #setting up the grating
             DrawTexture = visual.GratingStim(
@@ -170,6 +180,9 @@ def calibration(win):
             texdata1DTmp = np.exp(np.log((lum_val + inc*np.sin(pixelangle*SpatFreqDeg*2*np.pi + phase))/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
             pixVal = 2*(texdata1DTmp/255) - 1 #converting the pixel values from 0:255 to -1:1
             
+            if not calib_pattern: #for uniform mask, set all of pixval to lum_val
+                uniform_pix = np.exp(np.log(lum_val/MovSinGrat_AmpFactor)/MovSinGrat_GammaFactor)
+                pixVal[:] = 2*(uniform_pix/255) - 1
             
             #redraw texture and new lum val
             #setting up the grating

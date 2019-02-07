@@ -1,14 +1,14 @@
-
 def front():
     import numpy as np
     from psychopy import core, visual, event
     import VS
     import drumgrating
     import movSinGrat_tuning
-    import EYE_calibration3
+    import EYE_calibration
     import socket
     from init_para import *
     import TestNov
+    import Vdrumgrating
     
     
     #CREATING TEXTBOXES
@@ -261,6 +261,20 @@ def front():
         grid_horz_justification='center',
         grid_vert_justification='center')
     
+    
+    Name_vdrumgrating = visual.TextBox(
+        window=win,
+        text=("VdrumGrating"),
+        font_size = fontSize,
+        font_color=fontClr,
+        border_color=boarderClr,
+        pos=(origin_x + 0.5*front_textbox_size[0], origin_y - button_init_y - 3*(front_textbox_size[1]+button_spacing)),
+        size= front_textbox_size,
+        units='norm',
+        grid_horz_justification='center',
+        grid_vert_justification='center')
+    
+    
     #This is where we create the necessary buttons
     
     #DRUMGRATING
@@ -471,7 +485,18 @@ def front():
         opacity = 0, 
         vertices = front_button_size
         )
-
+    
+    #drumgrating with mask, direcitional split, and rotation 
+    vdrumGrating_But = visual.ShapeStim(
+        win = win, 
+        units = "norm", 
+        fillColor = [0,0,0],
+        ori = 0, 
+        pos = Name_vdrumgrating.getPosition(), 
+        opacity = 0 , 
+        vertices = front_button_size
+        )
+    
     
     #drawing the textboxes
     t_after_Obj.draw()
@@ -493,6 +518,7 @@ def front():
     ledstate_Obj.draw()
     MovSinGrat_Tuning_Obj.draw()
     Calibration_Obj.draw()
+    Name_vdrumgrating.draw()
     
     
     #drawing the buttons
@@ -515,6 +541,7 @@ def front():
     ledstateBut.draw()
     MovSinGrat_TuningBut.draw()
     calibration_button.draw()
+    vdrumGrating_But.draw()
     
     #drawing squares
     square1.draw()
@@ -697,9 +724,24 @@ def front():
             square1.draw()
             square2.draw()
             win.flip()
+            
+        elif mouse.isPressedIn(vdrumGrating_But) and currMouse[0] == 1:
+            square1.fillColor = [-1,-1,-1]
+            square2.fillColor = [-1,-1,-1]
+            square1.draw()
+            square2.draw()
+            win.flip()
+            Vdrumgrating.Vdrumgrating(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_beforeVal, MovSinGrat_t_stimVal, MovSinGrat_t_afterVal, MovSinGrat_syncVal, MovSinGrat_Motionmode)
+            keys = event.getKeys() #retrieving key presses from the buffer during the stimulation
+            keys = [] #clearing the key presses
+            square1.fillColor = [-1,-1,-1]
+            square2.fillColor = [-1,-1,-1]
+            square1.draw()
+            square2.draw()
+            win.flip()
         
         elif mouse.isPressedIn(calibration_button) and currMouse[0] == 1:
-            EYE_calibration3.calibration(win)
+            EYE_calibration.calibration(win)
             win.flip()
         
         elif keys:
@@ -727,6 +769,8 @@ def front():
             ledstate_Obj.draw()
             MovSinGrat_Tuning_Obj.draw()
             Calibration_Obj.draw()
+            vdrumGrating_But.draw()
+            Name_vdrumgrating.draw()
             square1.draw()
             square2.draw()
             win.flip()
