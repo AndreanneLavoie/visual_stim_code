@@ -30,9 +30,33 @@ Dispwidth = 597.7
 DispHeight = 336.2
 PixelSize = (Dispwidth*ScrnNum)/float(winWidth)
 winWidthofEachDisp = int(winWidth/ScrnNum)
+winHeightofEachDisp = int(winHeight/ScrnNum)
 fullscrn = True
 origin_x = -1
 origin_y = 1
+
+
+#Pixel values of overlayed mask
+mask = np.zeros((1,winWidth))
+maskArea = 0.33 #area of stimulation to be displayed where 1 refers to 100% and 0 refers to 0%
+
+for i in range(winWidth):
+    
+    if i < (maskArea*0.5*winWidth):
+        mask[0,i] = -1
+    
+    elif i > (winWidth - maskArea*0.5*winWidth):
+        mask[0,i] = -1
+    
+    else:
+        mask[0,i] = 1
+        
+
+#directional grating parameters
+directionalGrating_picBreak = 0 #location of the break for the grating. If 0.5 then the break will be in the middle, 0 refers to left side and 1 refers to right side
+directionalGrating_convergence = 1 #convergence or divergence of grating. 1 refers to converging and 0 refers to diverging 
+directionalGrating_rotate = 0 #if 0 then the barrel will appear to rotate clockwise and if 1 then the barrel will rotate counter clockwise
+    
 
 
 #drumgrating parameters that cannot be changed from front.py
@@ -164,6 +188,7 @@ square1 = psychopy.visual.ShapeStim(
     vertices = squareShape, 
     lineWidth = 0
     )
+
 #Duration of visual stimulation
 square2 = psychopy.visual.ShapeStim(
     win = win, 
@@ -171,6 +196,34 @@ square2 = psychopy.visual.ShapeStim(
     pos = square2_Pos, 
     fillColor = [-1, -1, -1],
     vertices = squareShape, 
+    lineWidth = 0)
+    
+#mask parameters
+mask_L_shape = np.array(([-1, 1],[-1.0/3, 1],[-1.0/3, -1], [-1, -1]))
+mask_R_shape = np.array(([1.0/3, 1],[1,1],[1, -1], [1.0/3, -1]))
+
+mask_L_shape.reshape(4, 2)
+mask_R_shape.reshape(4, 2)
+
+mask_L_pos= (0, 0)
+mask_R_pos= (0, 0)
+
+#Draw mask for tuning code when running on single screen (block R and L screens)
+
+mask_L = psychopy.visual.ShapeStim(
+    win = win, 
+    units = "norm",
+    pos = mask_L_pos,
+    fillColor = winClr,
+    vertices = mask_L_shape, 
     lineWidth = 0
     )
 
+mask_R = psychopy.visual.ShapeStim(
+    win = win, 
+    units = "norm",
+    pos = mask_R_pos,
+    fillColor = winClr,
+    vertices = mask_R_shape, 
+    lineWidth = 0
+    )

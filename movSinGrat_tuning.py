@@ -15,12 +15,15 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
 
     from init_para import (MovSinGrat_addblank, MovSinGrat_Amp_sinu, MovSinGrat_controlmod, MovSinGrat_dirindex, MovSinGrat_ori, 
     MovSinGrat_t_triginit, MovSinGrat_GammaFactor, MovSinGrat_AmpFactor, MovSinGrat_contrast, MovSinGrat_MeanLum, win,
-    winWidth , winHeight, ScrnNum, PixelSize, winWidthofEachDisp, DisplayFrameWidth, FR, square1, square2, fontSize, fontClr, win, Local_IP, Local_Port, Remote_IP, Remote_Port, ani_distance,
+    winWidth , winHeight, ScrnNum, PixelSize, winWidthofEachDisp, DisplayFrameWidth, FR, square1, square2, mask_L, mask_R, fontSize, fontClr, win, Local_IP, Local_Port, Remote_IP, Remote_Port, ani_distance,
     MovSinGrat_Rep, MovSinGrat_randomseq, MovSinGrat_features_dict, MovSinGrat_angles_list, MovSinGrat_temp_lin_list, MovSinGrat_temp_osc_list, MovSinGrat_location_list, MovSinGrat_contrast_list)
     
     import socket
     import numpy as np
     import conv
+    
+    #To display vs on a single screen set one_screen = True:
+    one_screen = True 
     
     
     #creating mouse functionality
@@ -181,7 +184,7 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
             tot_num_stim = MovSinGrat_Rep*MovSinGrat_ledstate*len(tuning_stim_ind)
             
             #defining the variable and array shape in which the parameters will be added to; each column will represent on parameter (spat_freq, temp_freq, stimId etc.) for each presented stimulus (row)
-            paras = np.empty(shape=[tot_num_stim, 11])
+            paras = np.empty(shape=[tot_num_stim, 12])
             
             #adding the parameters to the array
             # Generating sequence of order of presenting stimID that will ONLY change the TUNING FEATURE PARAMETER of the stimulus:
@@ -210,23 +213,23 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
                 
                     if MovSinGrat_features == 0: #0 = ori
                         paras[repind*(len(stimId))+localstimid, :] = [MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_contrast, MovSinGrat_MeanLum, MovSinGrat_dirindex, 
-                        MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, tuning_stim_val[stimId[localstimid]], MovSinGrat_ledstate] # ADD LOCATION 
+                        MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, tuning_stim_val[stimId[localstimid]], MovSinGrat_ledstate, 0] # ADD LOCATION 
                     
                     elif MovSinGrat_features == 1 : #1 = spat
                         paras[repind*(len(stimId))+localstimid, :] = [tuning_stim_val[stimId[localstimid]], MovSinGrat_tempFreqVal, MovSinGrat_contrast, MovSinGrat_MeanLum, MovSinGrat_dirindex, 
-                        MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate] #ADD LOCATION 
+                        MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate, 0] #ADD LOCATION 
                         
                     elif MovSinGrat_features == 2: # and movSinGrat_motionMode == 0: #2 = TempFreq
                         paras[repind*(len(stimId))+localstimid, :] = [MovSinGrat_SpatFreqVal, tuning_stim_val[stimId[localstimid]], MovSinGrat_contrast, MovSinGrat_MeanLum, MovSinGrat_dirindex, 
-                        MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate] #ADD LOCATION 
+                        MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate, 0] #ADD LOCATION 
                                             
                     elif MovSinGrat_features == 3: #3 = contrast
                         paras[repind*(len(stimId))+localstimid, :] = [ MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, tuning_stim_val[stimId[localstimid]], MovSinGrat_MeanLum, MovSinGrat_dirindex, 
-                        MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate] #ADD LOCATION 
+                        MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate, 0] #ADD LOCATION 
                     
                     #elif MovSinGrat_features == 4: #4 = location
                     #    paras[repind*(len(stimId))+localstimid, :] = [MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_contrast, MovSinGrat_MeanLum, MovSinGrat_dirindex, 
-                    #    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate] #ADD LOCATION 
+                    #    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate, 0] #ADD LOCATION 
             
             paratemp = [drumgrating_Ori, Motionmode, drumgrating_Amp_sinu, drumgrating_addblank] 
         
@@ -278,8 +281,14 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
             square1.draw()  #have to draw trigger squ; otherwise transient white will happen$$$$$$$$$$$$$
             square2.draw()
             win.flip()
+                
+        #setting name of file which will be used to save order of vs stim displayed; NAME = MVS (movSinGrat) + type of tuning feature manipulated in experiment + datetime
+        feature = MovSinGrat_features_dict.keys() 
+        date = datetime.today().strftime('%Y%m%d_%H%M%S') #extract today's date
+        fileName = expName + '_vs_'+ feature[MovSinGrat_features] + '_' + date  #exp name defined above either by user (if not synch) or by eye tracking software (if user)
         
-        print ('expName up here: ', expName)
+        
+        
         #creating generalized sequence of randomely shuffled stimuli for tuning, given a particular feature 
         
         #This firt if loop will create two varialbes: 
@@ -322,7 +331,7 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
         tot_num_stim = MovSinGrat_Rep*MovSinGrat_ledstate*len(tuning_stim_ind)
         
         #defining the variable and array shape in which the parameters will be added to; each column will represent on parameter (spat_freq, temp_freq, stimId etc.) for each presented stimulus (row)
-        paras = np.empty(shape=[tot_num_stim, 11])
+        paras = np.empty(shape=[tot_num_stim, 12])
         
         #adding the parameters to the array
         # Generating sequence of order of presenting stimID that will ONLY change the TUNING FEATURE PARAMETER of the stimulus:
@@ -351,23 +360,23 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
             
                 if MovSinGrat_features == 0: #0 = ori
                     paras[repind*(len(stimId))+localstimid, :] = [MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_contrast, MovSinGrat_MeanLum, MovSinGrat_dirindex, 
-                    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, tuning_stim_val[stimId[localstimid]], MovSinGrat_ledstate] # ADD LOCATION 
+                    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, tuning_stim_val[stimId[localstimid]], MovSinGrat_ledstate, 0] # ADD LOCATION 
                 
                 elif MovSinGrat_features == 1 : #1 = spat
                     paras[repind*(len(stimId))+localstimid, :] = [tuning_stim_val[stimId[localstimid]], MovSinGrat_tempFreqVal, MovSinGrat_contrast, MovSinGrat_MeanLum, MovSinGrat_dirindex, 
-                    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate] #ADD LOCATION 
+                    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate, 0] #ADD LOCATION 
                     
                 elif MovSinGrat_features == 2: # and movSinGrat_motionMode == 0: #2 = TempFreq
                     paras[repind*(len(stimId))+localstimid, :] = [MovSinGrat_SpatFreqVal, tuning_stim_val[stimId[localstimid]], MovSinGrat_contrast, MovSinGrat_MeanLum, MovSinGrat_dirindex, 
-                    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate] #ADD LOCATION 
+                    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate, 0] #ADD LOCATION 
                                         
                 elif MovSinGrat_features == 4: #4 = contrast
                     paras[repind*(len(stimId))+localstimid, :] = [ MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, tuning_stim_val[stimId[localstimid]], MovSinGrat_MeanLum, MovSinGrat_dirindex, 
-                    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate] #ADD LOCATION 
+                    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate, 0] #ADD LOCATION 
                 
                 #elif MovSinGrat_features == 5: #5 = location
                 #    paras[repind*(len(stimId))+localstimid, :] = [MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_contrast, MovSinGrat_MeanLum, MovSinGrat_dirindex, 
-                #    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate] #ADD LOCATION 
+                #    MovSinGrat_t_before, MovSinGrat_t_During, MovSinGrat_t_after, MovSinGrat_t_triginit, MovSinGrat_ori, MovSinGrat_ledstate, 0] #ADD LOCATION 
         
         #paratemp = [drumgrating_Ori, Motionmode, drumgrating_Amp_sinu, drumgrating_addblank]
         
@@ -407,6 +416,8 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
     
     #Genereating the VS based on the parameters in paras 
     for m in xrange(tot_num_stim):
+        
+        paras[m, 11] = 1 #marks which stim have been presented to the animal
         
         tic = clock.getTime()
         
@@ -553,6 +564,11 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
             if frmNum >= len(texdata1D):
                     frmNum = 0
         
+        #mask R and L screen to display stim on front screen only
+        if one_screen:
+            mask_L.draw()
+            mask_R.draw()
+        
         square1.draw()
         square2.draw()
         win.flip()
@@ -581,6 +597,12 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
                     frmNum = 0
                 
                 DrawTexture.draw()
+                
+                #mask R and L screen to display stim on front screen only
+                if one_screen:
+                    mask_L.draw()
+                    mask_R.draw()
+                
                 square1.draw()
                 square2.draw()
                 win.flip()
@@ -619,6 +641,11 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
                     sock.close()
                 return
             
+            #mask R and L screen to display stim on front screen only
+            if one_screen:
+                mask_L.draw()
+                mask_R.draw()
+        
             square1.draw()
             square2.draw()
             win.flip()
@@ -647,9 +674,29 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
                 frmNum = 0
             
             DrawTexture.draw()
+            
+            #mask R and L screen to display stim on front screen only
+            if one_screen:
+                mask_L.draw()
+                mask_R.draw()
+            
             square1.draw()
             square2.draw()
             win.flip()
+        
+        #save vs data in .csv format
+        
+        #create a temp list variable that stores array values that will be appended
+        save_row = paras[m].tolist()
+        
+        #open and append values to new file
+        with open(fileName + '.csv', 'a') as f: 
+            
+            for i in range(len(save_row)):
+                
+                f.write(str(save_row[i]) + ',')
+            
+            f.write('\n')
         
         
         if Synch:
@@ -678,7 +725,12 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
                     frmNum = 0
                 
                 DrawTexture.draw()
-                
+            
+            #mask R and L screen to display stim on front screen only
+            if one_screen:
+                mask_L.draw()
+                mask_R.draw()
+            
             square1.draw()
             square2.draw()
             win.flip()
@@ -706,14 +758,3 @@ def movSinGrat(MovSinGrat_SpatFreqVal, MovSinGrat_tempFreqVal, MovSinGrat_t_befo
                     sock.close()
                     print("Exit at ESC2")
                     return 
-    #save vs data in .npy format
-    #name file MVS (movSinGrat) + type of tuning feature manipulated in experiment + datetime
-    feature = MovSinGrat_features_dict.keys() 
-    date = datetime.today().strftime('%Y%m%d_%H%M%S') #extract today's date
-    
-    print ('expName down here: ', expName)
-    fileName = expName + '_vs_'+ feature[MovSinGrat_features] + '_' + date  #exp name defined above either by user (if not synch) or by eye tracking software (if user)
-    
-    np.save(fileName + '.npy', paras)
-    #let user know data was saved:
-    print 'vs data saved in file named:', '-vs-', feature[MovSinGrat_features], date,'.npy'
