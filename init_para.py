@@ -146,6 +146,8 @@ MovSinGrat_features = int(MovSinGrat_features_dict['ori'])
 ani_distance = DisplayFrameWidth*0.5
 MovSinGrat_t_triginit = 1000
 loop = 12
+#To display vs on a single screen set one_screen = True:
+one_screen = True 
 
 
 #creating the window

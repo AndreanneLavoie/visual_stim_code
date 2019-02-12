@@ -9,6 +9,7 @@ def front():
     from init_para import *
     import TestNov
     import Vdrumgrating
+    import Rf6x8
     
     
     #CREATING TEXTBOXES
@@ -273,6 +274,20 @@ def front():
         units='norm',
         grid_horz_justification='center',
         grid_vert_justification='center')
+        
+        
+    #RF 6X8 TEXTBOX
+    Name_rf6x8 = visual.TextBox(
+        window=win,
+        text=("rf 6x8"),
+        font_size = fontSize,
+        font_color=fontClr,
+        border_color=boarderClr,
+        pos=(origin_x + 0.5*front_textbox_size[0], origin_y - button_init_y - 4*(front_textbox_size[1]+button_spacing)),
+        size= front_textbox_size,
+        units='norm',
+        grid_horz_justification='center',
+        grid_vert_justification='center')
     
     
     #This is where we create the necessary buttons
@@ -496,6 +511,16 @@ def front():
         opacity = 0 , 
         vertices = front_button_size
         )
+        
+    rf6x8_But = visual.ShapeStim(
+        win = win, 
+        units = "norm", 
+        fillColor = [0,0,0],
+        ori = 0, 
+        pos = Name_rf6x8.getPosition(), 
+        opacity = 0 , 
+        vertices = front_button_size
+        )
     
     
     #drawing the textboxes
@@ -519,6 +544,7 @@ def front():
     MovSinGrat_Tuning_Obj.draw()
     Calibration_Obj.draw()
     Name_vdrumgrating.draw()
+    Name_rf6x8.draw()
     
     
     #drawing the buttons
@@ -542,6 +568,7 @@ def front():
     MovSinGrat_TuningBut.draw()
     calibration_button.draw()
     vdrumGrating_But.draw()
+    rf6x8_But.draw()
     
     #drawing squares
     square1.draw()
@@ -743,6 +770,21 @@ def front():
         elif mouse.isPressedIn(calibration_button) and currMouse[0] == 1:
             EYE_calibration.calibration(win)
             win.flip()
+            
+        elif mouse.isPressedIn(rf6x8_But) and currMouse[0] == 1:
+            square1.fillColor = [-1,-1,-1]
+            square2.fillColor = [-1,-1,-1]
+            square1.draw()
+            square2.draw()
+            win.flip()
+            Rf6x8.rf6x8(win)
+            keys = event.getKeys() #retrieving key presses from the buffer during the stimulation
+            keys = [] #clearing the key presses
+            square1.fillColor = [-1,-1,-1]
+            square2.fillColor = [-1,-1,-1]
+            square1.draw()
+            square2.draw()
+            win.flip()
         
         elif keys:
             if keys[0] == 'escape':
@@ -771,6 +813,7 @@ def front():
             Calibration_Obj.draw()
             vdrumGrating_But.draw()
             Name_vdrumgrating.draw()
+            Name_rf6x8.draw()
             square1.draw()
             square2.draw()
             win.flip()
